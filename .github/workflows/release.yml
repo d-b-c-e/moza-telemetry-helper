@@ -37,5 +37,10 @@ jobs:
           RELEASE_TAG: ${{ github.ref_name }}
         run: |
           $assets = @(Get-ChildItem artifacts/releases/*/dist/* -File | ForEach-Object FullName)
+          gh release view $env:RELEASE_TAG --json tagName 2>$null
+          if ($LASTEXITCODE -eq 0) {
+            Write-Host 'This release was already uploaded; keeping its existing assets.'
+            exit 0
+          }
           gh release create $env:RELEASE_TAG @assets --verify-tag --draft --title "MOZA Telemetry Helper $env:RELEASE_TAG" --generate-notes
           if ($LASTEXITCODE -ne 0) { throw 'Release upload failed.' }

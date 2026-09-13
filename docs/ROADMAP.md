@@ -24,6 +24,14 @@
 - [ ] Code signing and SmartScreen reputation.
 - [ ] Verify a real upgrade to a later version from the installed UI when desktop testing is authorized.
 
+## v0.3 — hotkey control
+
+- [x] Optional configurable global hotkey, default Ctrl+Alt+F10 with registration disabled until enabled.
+- [x] Tray-compatible message-only listener, repeat suppression, conflict reporting, and registration cleanup.
+- [x] Reuse owned-session Start/Stop guards and preserve existing game/process safety.
+- [x] Automated registration and toggle-dispatch tests without desktop input.
+- [ ] User verification of the shortcut while playing a game.
+
 ## Compatibility matrix
 
 - [ ] Live DiRT 3 packet capture: version, size, RPM scale, reverse and neutral.

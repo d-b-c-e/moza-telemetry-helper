@@ -10,6 +10,7 @@ public sealed record AppSettings
     public bool StartWithWindows { get; init; }
     public bool CloseToTray { get; init; }
     public bool CheckForUpdates { get; init; } = true;
+    public HotkeyOptions Hotkey { get; init; } = new();
     public BridgeOptions Bridge { get; init; } = new();
     public static string SettingsPath => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MozaTelemetryHelper", "settings.json");
 

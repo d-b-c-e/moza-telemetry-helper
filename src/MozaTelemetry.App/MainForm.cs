@@ -43,8 +43,8 @@ public sealed partial class MainForm : Form
         Text = "MOZA Telemetry Helper " + GitHubUpdates.CurrentVersion;
         Icon = appImage;
         trayIcon.Icon = trayImage;
-        ClientSize = new Size(900, 860);
-        MinimumSize = new Size(880, 890);
+        ClientSize = new Size(900, 930);
+        MinimumSize = new Size(880, 960);
         StartPosition = FormStartPosition.CenterScreen;
         AutoScaleMode = AutoScaleMode.Dpi;
         Font = new Font("Segoe UI", 10);
@@ -79,6 +79,7 @@ public sealed partial class MainForm : Form
         var behavior = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false };
         behavior.Controls.AddRange([startWithWindows, closeToTray, checkForUpdates]);
         AddRow(grid, "App behavior", behavior);
+        AddRow(grid, "Toggle hotkey", CreateHotkeyControls());
         AddRow(grid, "Updates", CreateUpdateControls());
         layout.Controls.Add(grid, 0, 2);
         guidance.Margin = new Padding(3, 12, 3, 12);
@@ -138,6 +139,7 @@ public sealed partial class MainForm : Form
         FormClosed += (_, _) => { timer.Dispose(); availabilityTimer.Dispose(); trayIcon.Visible = false; trayIcon.Dispose(); trayMenu.Dispose(); appImage.Dispose(); trayImage.Dispose(); };
         ConfigureUpdates();
         LoadSettings();
+        ConfigureHotkey();
         startWithWindows.CheckedChanged += (_, _) => SavePreferences(updateStartup: true);
         closeToTray.CheckedChanged += (_, _) => SavePreferences(updateStartup: false);
         UpdateGuidance();
@@ -166,6 +168,7 @@ public sealed partial class MainForm : Form
             processName.ExecutableName = saved.ProcessName; runProcess.Checked = saved.RunProcess;
             closeToTray.Checked = saved.CloseToTray;
             checkForUpdates.Checked = saved.CheckForUpdates;
+            hotkeyOptions = saved.Hotkey ?? new();
             startWithWindows.Checked = WindowsStartup.IsEnabled();
             mode.SelectedIndex = (int)saved.Bridge.Mode;
             listenAddress.SelectedItem = saved.Bridge.ListenAddress;
@@ -183,6 +186,7 @@ public sealed partial class MainForm : Form
         ProcessName = processName.ExecutableName, RunProcess = runProcess.Checked,
         StartWithWindows = startWithWindows.Checked, CloseToTray = closeToTray.Checked,
         CheckForUpdates = checkForUpdates.Checked,
+        Hotkey = hotkeyOptions,
         Bridge = new BridgeOptions { Mode = (TelemetryMode)mode.SelectedIndex, ListenAddress = listenAddress.Text,
             ListenPort = (int)listenPort.Value, OutputAddress = outputAddress.Text.Trim(), OutputPort = (int)outputPort.Value, RpmScale = (float)rpmScale.Value }
     };
