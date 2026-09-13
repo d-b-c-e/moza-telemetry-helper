@@ -2,6 +2,8 @@
 
 A Windows utility for running a small, idle process under a configurable executable name, defaulting to **ForzaHorizon5.exe**, so MOZA Pit House can select a familiar game telemetry reader. An optional UDP bridge relays FH5 telemetry or converts supported source packets to FH5.
 
+![MOZA Telemetry Helper showing executable selection, telemetry settings, tray options, and update checks](docs/images/moza-telemetry-helper.png)
+
 **The default helper works on the development setup:** Pit House 1.4.0.30 activates its FH5 reader, and the user confirmed the demo updates the on-wheel screen. A process name is not a documented MOZA API, and other versions/devices need testing. The converters remain experimental until tested with each game. See [verification](docs/verification.md).
 
 ## Features
