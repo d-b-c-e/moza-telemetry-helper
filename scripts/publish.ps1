@@ -8,6 +8,8 @@ try {
     $selfContained = if ($FrameworkDependent) { 'false' } else { 'true' }
     dotnet publish src/MozaTelemetry.Sentinel -c Release -r win-x64 --self-contained $selfContained -o $sentinelOutput -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=$selfContained
     if ($LASTEXITCODE -ne 0) { throw 'Sentinel publish failed.' }
+    dotnet publish src/MozaTelemetry.Updater -c Release -r win-x64 --self-contained $selfContained -o (Join-Path $output 'updater') -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=$selfContained -p:IncludeNativeLibrariesForSelfExtract=true
+    if ($LASTEXITCODE -ne 0) { throw 'Updater publish failed.' }
     dotnet publish src/MozaTelemetry.App -c Release -r win-x64 --self-contained $selfContained -o $output
     if ($LASTEXITCODE -ne 0) { throw 'Application publish failed.' }
     Copy-Item -LiteralPath 'README.md' -Destination $output

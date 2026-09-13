@@ -4,9 +4,11 @@
 
 ## Automated
 
-- 52 passing tests: exact wire offsets, SI units, gear conversion, protocol rejection, input validation, real localhost UDP relay/conversion, bind conflict, stale-data reset, resume, cancellation, quoting of Windows startup paths with spaces, executable preset/custom transitions and saved-name migration, and embedded icon loading at 16/32 pixels.
+- 73 passing tests: wire offsets, SI units, gears, protocol rejection, input validation, localhost UDP, stale-data handling, startup quoting, executable selection, icons, update version/asset filtering, settings migration, download limits/cancellation, and SHA-256 corruption/truncation rejection.
 - Process lifecycle smoke passed: custom Windows process name, duplicate guard, normal stop, session-directory cleanup, and child exit following forced parent termination.
 - Self-contained Windows x64 application published successfully.
+- v0.2 installer tested silently under a separate test AppId and temporary installation path, without shortcuts or production registry changes: complete payload, refusal to upgrade while the app mutex exists, successful upgrade, preservation of unrelated user data, installed-app lifecycle smoke checks, and uninstall cleanup all passed. The test never opens the app window.
+- GitHub update selection and download verification have automated coverage; the final install-and-reopen interaction through the live UI still needs an authorized desktop test and a newer release.
 - GUI visually inspected on a 3840×2160 desktop; settings, guidance, controls, and log are visible.
 - Revised duplicate-status display visually confirmed with a bounded `MozaUiSmoke.exe` child: amber text showed the existing PID and Start was disabled before a click.
 - Tray/startup behavior is implemented and builds successfully. Live tray interaction and an actual Windows sign-in cycle have not been exercised; desktop automation was stopped at the user's request. Future desktop interaction requires asking first.

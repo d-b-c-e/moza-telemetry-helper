@@ -3,6 +3,7 @@
     <Project Path="src/MozaTelemetry.App/MozaTelemetry.App.csproj" />
     <Project Path="src/MozaTelemetry.Core/MozaTelemetry.Core.csproj" />
     <Project Path="src/MozaTelemetry.Sentinel/MozaTelemetry.Sentinel.csproj" />
+    <Project Path="src/MozaTelemetry.Updater/MozaTelemetry.Updater.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/MozaTelemetry.Tests/MozaTelemetry.Tests.csproj" />

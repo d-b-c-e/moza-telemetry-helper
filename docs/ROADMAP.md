@@ -14,6 +14,16 @@
 - [x] Confirm physical MOZA wheel display with demo telemetry (user confirmed 2026-09-12, Pit House 1.4.0.30).
 - [ ] Confirm process-only behavior with an existing FH5-output arcade port.
 
+## v0.2 — distribution and updates
+
+- [x] Per-user Inno Setup installer and self-contained ZIP release assets.
+- [x] Automatic GitHub checks, manual checks, and user-triggered installation while stopped.
+- [x] Existing GitHub CLI authentication for private releases; anonymous downloads when public.
+- [x] Installer size/SHA-256 verification, wait for app exit, preserve settings, and restart after update.
+- [x] Tag-triggered draft release workflow and local packaging fallback.
+- [ ] Code signing and SmartScreen reputation.
+- [ ] Verify a real upgrade to a later version from the installed UI when desktop testing is authorized.
+
 ## Compatibility matrix
 
 - [ ] Live DiRT 3 packet capture: version, size, RPM scale, reverse and neutral.

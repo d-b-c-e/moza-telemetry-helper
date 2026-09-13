@@ -1,0 +1,41 @@
+name: Package release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+      - name: Check version matches tag
+        shell: pwsh
+        env:
+          RELEASE_TYPE: ${{ github.ref_type }}
+          RELEASE_REF: ${{ github.ref_name }}
+        run: |
+          $version = ([xml](Get-Content Directory.Build.props -Raw)).Project.PropertyGroup.Version
+          if ($env:RELEASE_TYPE -eq 'tag' -and $env:RELEASE_REF -ne "v$version") { throw 'Tag and app version differ.' }
+      - run: dotnet test MozaTelemetry.slnx -c Release
+      - name: Build installer and archive
+        shell: pwsh
+        run: ./scripts/release.ps1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: release-assets
+          path: artifacts/releases/*/dist/*
+      - name: Upload draft release
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $assets = @(Get-ChildItem artifacts/releases/*/dist/* -File | ForEach-Object FullName)
+          gh release create $env:RELEASE_TAG @assets --verify-tag --draft --title "MOZA Telemetry Helper $env:RELEASE_TAG" --generate-notes
+          if ($LASTEXITCODE -ne 0) { throw 'Release upload failed.' }

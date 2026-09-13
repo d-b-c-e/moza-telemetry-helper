@@ -2,7 +2,7 @@ using MozaTelemetry.Core;
 
 namespace MozaTelemetry.App;
 
-public sealed class MainForm : Form
+public sealed partial class MainForm : Form
 {
     private readonly ProcessNameSelector processName = new();
     private readonly CheckBox runProcess = new() { Text = "Run process helper", Checked = true, AutoSize = true };
@@ -40,7 +40,7 @@ public sealed class MainForm : Form
 
     public MainForm(bool startInTray = false)
     {
-        Text = "MOZA Telemetry Helper";
+        Text = "MOZA Telemetry Helper " + GitHubUpdates.CurrentVersion;
         Icon = appImage;
         trayIcon.Icon = trayImage;
         ClientSize = new Size(900, 860);
@@ -77,8 +77,9 @@ public sealed class MainForm : Form
         AddRow(grid, "Send FH5 to", output);
         AddRow(grid, "CM RPM multiplier", rpmScale);
         var behavior = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false };
-        behavior.Controls.AddRange([startWithWindows, closeToTray]);
+        behavior.Controls.AddRange([startWithWindows, closeToTray, checkForUpdates]);
         AddRow(grid, "App behavior", behavior);
+        AddRow(grid, "Updates", CreateUpdateControls());
         layout.Controls.Add(grid, 0, 2);
         guidance.Margin = new Padding(3, 12, 3, 12);
         layout.Controls.Add(guidance, 0, 3);
@@ -126,6 +127,8 @@ public sealed class MainForm : Form
                 return;
             }
             eventArgs.Cancel = true;
+            exitRequested = true;
+            updateCancellation.Cancel();
             if (changingSession) return; // Let startup/stop finish before closing.
             Enabled = false;
             await StopSessionAsync();
@@ -133,6 +136,7 @@ public sealed class MainForm : Form
             Close();
         };
         FormClosed += (_, _) => { timer.Dispose(); availabilityTimer.Dispose(); trayIcon.Visible = false; trayIcon.Dispose(); trayMenu.Dispose(); appImage.Dispose(); trayImage.Dispose(); };
+        ConfigureUpdates();
         LoadSettings();
         startWithWindows.CheckedChanged += (_, _) => SavePreferences(updateStartup: true);
         closeToTray.CheckedChanged += (_, _) => SavePreferences(updateStartup: false);
@@ -161,6 +165,7 @@ public sealed class MainForm : Form
             var saved = AppSettings.Load();
             processName.ExecutableName = saved.ProcessName; runProcess.Checked = saved.RunProcess;
             closeToTray.Checked = saved.CloseToTray;
+            checkForUpdates.Checked = saved.CheckForUpdates;
             startWithWindows.Checked = WindowsStartup.IsEnabled();
             mode.SelectedIndex = (int)saved.Bridge.Mode;
             listenAddress.SelectedItem = saved.Bridge.ListenAddress;
@@ -177,6 +182,7 @@ public sealed class MainForm : Form
     {
         ProcessName = processName.ExecutableName, RunProcess = runProcess.Checked,
         StartWithWindows = startWithWindows.Checked, CloseToTray = closeToTray.Checked,
+        CheckForUpdates = checkForUpdates.Checked,
         Bridge = new BridgeOptions { Mode = (TelemetryMode)mode.SelectedIndex, ListenAddress = listenAddress.Text,
             ListenPort = (int)listenPort.Value, OutputAddress = outputAddress.Text.Trim(), OutputPort = (int)outputPort.Value, RpmScale = (float)rpmScale.Value }
     };
@@ -202,6 +208,8 @@ public sealed class MainForm : Form
 
     private void UpdateAvailability()
     {
+        RefreshUpdateControls();
+        if (installingUpdate) { start.Enabled = trayStart.Enabled = trayStop.Enabled = false; return; }
         if (changingSession) { trayStart.Enabled = false; trayStop.Enabled = false; return; }
         if (session != null)
         {
@@ -291,6 +299,7 @@ public sealed class MainForm : Form
 
     private async Task StartSessionAsync()
     {
+        if (installingUpdate || changingSession || exitRequested) return;
         changingSession = true;
         trayStart.Enabled = trayStop.Enabled = false;
         start.Enabled = false;

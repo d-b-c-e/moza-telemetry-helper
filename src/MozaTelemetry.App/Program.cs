@@ -9,6 +9,8 @@ internal static class Program
     [STAThread]
     private static int Main(string[] args)
     {
+        // Keep this handle alive until process exit; installers must also detect headless sessions.
+        using var installationLock = new Mutex(false, UpdatePackage.AppMutex);
         if (args.Contains("--headless")) return RunHeadlessAsync(args).GetAwaiter().GetResult();
         ApplicationConfiguration.Initialize();
         Application.Run(new MainForm(startInTray: args.Contains("--tray")));

@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <AssemblyName>MozaTelemetryUpdater</AssemblyName>
+    <ApplicationIcon>../../assets/app-icon.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup><Compile Include="../Shared/UpdatePackage.cs" Link="UpdatePackage.cs" /></ItemGroup>
+</Project>
