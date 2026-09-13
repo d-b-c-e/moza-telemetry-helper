@@ -1,0 +1,16 @@
+param([switch]$FrameworkDependent)
+$ErrorActionPreference = 'Stop'
+$repoRoot = Split-Path $PSScriptRoot -Parent
+$output = Join-Path $repoRoot 'artifacts\win-x64'
+$sentinelOutput = Join-Path $output 'sentinel'
+Push-Location $repoRoot
+try {
+    $selfContained = if ($FrameworkDependent) { 'false' } else { 'true' }
+    dotnet publish src/MozaTelemetry.Sentinel -c Release -r win-x64 --self-contained $selfContained -o $sentinelOutput -p:PublishSingleFile=true -p:EnableCompressionInSingleFile=$selfContained
+    if ($LASTEXITCODE -ne 0) { throw 'Sentinel publish failed.' }
+    dotnet publish src/MozaTelemetry.App -c Release -r win-x64 --self-contained $selfContained -o $output
+    if ($LASTEXITCODE -ne 0) { throw 'Application publish failed.' }
+    Copy-Item -LiteralPath 'README.md' -Destination $output
+    Copy-Item -LiteralPath 'docs' -Destination $output -Recurse -Force
+    Write-Host "Ready: $output\MozaTelemetryHelper.exe"
+} finally { Pop-Location }
