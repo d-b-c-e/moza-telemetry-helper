@@ -4,6 +4,11 @@
     <TargetFramework>net10.0-windows</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
     <AssemblyName>MozaTelemetryHelper</AssemblyName>
+    <ApplicationIcon>../../assets/app-icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup><ProjectReference Include="../MozaTelemetry.Core/MozaTelemetry.Core.csproj" /></ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="../../assets/app-icon.ico" LogicalName="MozaTelemetry.AppIcon.ico" />
+    <Content Include="../../assets/LICENSE-lucide.txt" Link="LICENSE-lucide.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

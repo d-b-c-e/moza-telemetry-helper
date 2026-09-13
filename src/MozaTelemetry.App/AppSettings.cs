@@ -5,7 +5,7 @@ namespace MozaTelemetry.App;
 
 public sealed record AppSettings
 {
-    public string ProcessName { get; init; } = "ForzaHorizon5.exe";
+    public string ProcessName { get; init; } = ProcessNameSelector.DefaultExecutable;
     public bool RunProcess { get; init; } = true;
     public bool StartWithWindows { get; init; }
     public bool CloseToTray { get; init; }

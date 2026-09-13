@@ -1,7 +1,7 @@
-param([switch]$FrameworkDependent)
+param([switch]$FrameworkDependent, [string]$OutputDirectory)
 $ErrorActionPreference = 'Stop'
 $repoRoot = Split-Path $PSScriptRoot -Parent
-$output = Join-Path $repoRoot 'artifacts\win-x64'
+$output = if ($OutputDirectory) { [IO.Path]::GetFullPath($OutputDirectory) } else { Join-Path $repoRoot 'artifacts\win-x64' }
 $sentinelOutput = Join-Path $output 'sentinel'
 Push-Location $repoRoot
 try {

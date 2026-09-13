@@ -6,7 +6,7 @@ A Windows utility for running a small, idle process under a configurable executa
 
 ## Features
 
-- Editable executable name and Start/Stop controls; FH5 is the default. A live availability indicator shows existing process IDs and disables duplicate starts.
+- Executable-name presets and Start/Stop controls; FH5 is the default. Choose **Custom** (last in the list) to reveal a name textbox. A live availability indicator shows existing process IDs and disables duplicate starts.
 - Process only mode for games/ports already emitting FH5 directly to Pit House.
 - FH5 relay with byte-for-byte forwarding of validated 324-byte packets.
 - Experimental Codemasters legacy `extradata=3` (264-byte) → FH5 conversion.
@@ -16,6 +16,7 @@ A Windows utility for running a small, idle process under a configurable executa
 - Live dashboard, packet/error counters, settings saved per Windows user.
 - Optional start with Windows (app starts in tray) and close window to tray.
 - Tray menu: Show, Start helper/telemetry, Stop, and Exit; double-click to reopen.
+- Distinct amber gauge icon for the executable, taskbar, and system tray (adapted from Lucide, ISC license).
 - Race-off packet after two seconds without valid data and on normal stop.
 - Owned process exits when the helper stops or crashes. Existing games are never renamed or terminated.
 
@@ -42,6 +43,8 @@ Under **App behavior**, enable **Start app with Windows** to register this app f
 The tray icon is available while the app is open. Right-click for Show, Start, Stop, and Exit; double-click to show the window. With **Close window to tray** enabled, the X button hides the window and preserves a running session. Tray **Exit** still cleans up. **Stop** only stops a process created by that particular app instance.
 
 If FH5 or another matching process is already running (including a headless helper), an amber process-status message shows its PID and Start is disabled. The status refreshes automatically. Stop the existing session, or uncheck **Run process helper** and choose a telemetry mode to use the bridge alone. A custom process name only changes detection identity; output remains FH5 and must be sent to an FH5 reader.
+
+The executable dropdown includes FH5/FH4, Forza Motorsport (Steam), Project CARS/2, DiRT 4/Rally 2.0, Assetto Corsa/Competizione, Automobilista 2, and iRacing process names from Pit House's configuration. **Custom** reveals a textbox accepting a name with or without `.exe`. Existing saved custom names restore automatically. Selecting a preset changes the process identity only; it does not change the output protocol or destination port.
 
 ## Routing
 
@@ -71,6 +74,7 @@ MOZA already lists **Project CARS 2 and DiRT 4** as native telemetry-compatible.
 ```powershell
 dotnet test MozaTelemetry.slnx -c Release
 ./scripts/publish.ps1 -FrameworkDependent # smaller local build; .NET 10 Desktop Runtime required
+./scripts/publish.ps1 -OutputDirectory ./artifacts/win-x64-update # package separately while the current app remains open
 ./scripts/smoke-test.ps1
 ```
 

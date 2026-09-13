@@ -4,7 +4,7 @@ namespace MozaTelemetry.App;
 
 public sealed class MainForm : Form
 {
-    private readonly TextBox processName = new() { Text = "ForzaHorizon5.exe" };
+    private readonly ProcessNameSelector processName = new();
     private readonly CheckBox runProcess = new() { Text = "Run process helper", Checked = true, AutoSize = true };
     private readonly CheckBox startWithWindows = new() { Text = "Start app with Windows (in tray)", AutoSize = true };
     private readonly CheckBox closeToTray = new() { Text = "Close window to tray (keeps helper running)", AutoSize = true };
@@ -24,7 +24,9 @@ public sealed class MainForm : Form
     private readonly TextBox log = new() { Multiline = true, ReadOnly = true, ScrollBars = ScrollBars.Vertical, Dock = DockStyle.Fill };
     private readonly System.Windows.Forms.Timer timer = new() { Interval = 250 };
     private readonly System.Windows.Forms.Timer availabilityTimer = new() { Interval = 1000 };
-    private readonly NotifyIcon trayIcon = new() { Text = "MOZA Telemetry Helper", Icon = SystemIcons.Application };
+    private readonly Icon appImage = AppIcon.Load(32);
+    private readonly Icon trayImage = AppIcon.Load(16);
+    private readonly NotifyIcon trayIcon = new() { Text = "MOZA Telemetry Helper" };
     private readonly ContextMenuStrip trayMenu = new();
     private readonly ToolStripMenuItem trayStart = new("Start helper");
     private readonly ToolStripMenuItem trayStop = new("Stop helper") { Enabled = false };
@@ -39,6 +41,8 @@ public sealed class MainForm : Form
     public MainForm(bool startInTray = false)
     {
         Text = "MOZA Telemetry Helper";
+        Icon = appImage;
+        trayIcon.Icon = trayImage;
         ClientSize = new Size(900, 860);
         MinimumSize = new Size(880, 890);
         StartPosition = FormStartPosition.CenterScreen;
@@ -99,7 +103,7 @@ public sealed class MainForm : Form
             UpdateGuidance();
         };
         runProcess.CheckedChanged += (_, _) => { UpdateGuidance(); UpdateAvailability(); };
-        processName.TextChanged += (_, _) => UpdateAvailability();
+        processName.ExecutableNameChanged += (_, _) => UpdateAvailability();
         availabilityTimer.Tick += (_, _) => UpdateAvailability();
         timer.Tick += async (_, _) => await RefreshStatusAsync();
         trayMenu.Items.Add("Show MOZA Telemetry Helper", null, (_, _) => ShowFromTray());
@@ -128,7 +132,7 @@ public sealed class MainForm : Form
             closing = true;
             Close();
         };
-        FormClosed += (_, _) => { timer.Dispose(); availabilityTimer.Dispose(); trayIcon.Visible = false; trayIcon.Dispose(); trayMenu.Dispose(); };
+        FormClosed += (_, _) => { timer.Dispose(); availabilityTimer.Dispose(); trayIcon.Visible = false; trayIcon.Dispose(); trayMenu.Dispose(); appImage.Dispose(); trayImage.Dispose(); };
         LoadSettings();
         startWithWindows.CheckedChanged += (_, _) => SavePreferences(updateStartup: true);
         closeToTray.CheckedChanged += (_, _) => SavePreferences(updateStartup: false);
@@ -155,7 +159,7 @@ public sealed class MainForm : Form
         try
         {
             var saved = AppSettings.Load();
-            processName.Text = saved.ProcessName; runProcess.Checked = saved.RunProcess;
+            processName.ExecutableName = saved.ProcessName; runProcess.Checked = saved.RunProcess;
             closeToTray.Checked = saved.CloseToTray;
             startWithWindows.Checked = WindowsStartup.IsEnabled();
             mode.SelectedIndex = (int)saved.Bridge.Mode;
@@ -171,7 +175,7 @@ public sealed class MainForm : Form
 
     private AppSettings ReadSettings() => new()
     {
-        ProcessName = ProcessIdentity.NormalizeName(processName.Text), RunProcess = runProcess.Checked,
+        ProcessName = processName.ExecutableName, RunProcess = runProcess.Checked,
         StartWithWindows = startWithWindows.Checked, CloseToTray = closeToTray.Checked,
         Bridge = new BridgeOptions { Mode = (TelemetryMode)mode.SelectedIndex, ListenAddress = listenAddress.Text,
             ListenPort = (int)listenPort.Value, OutputAddress = outputAddress.Text.Trim(), OutputPort = (int)outputPort.Value, RpmScale = (float)rpmScale.Value }
@@ -218,7 +222,7 @@ public sealed class MainForm : Form
         }
         try
         {
-            var name = ProcessIdentity.NormalizeName(processName.Text);
+            var name = processName.ExecutableName;
             var existing = ProcessIdentity.FindMatchingProcessIds(name);
             start.Enabled = existing.Length == 0;
             start.Text = existing.Length == 0 ? "Start helper" : "Process already running";

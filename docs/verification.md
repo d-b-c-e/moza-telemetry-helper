@@ -4,12 +4,13 @@
 
 ## Automated
 
-- 45 passing tests: exact wire offsets, SI units, gear conversion, protocol rejection, input validation, real localhost UDP relay/conversion, bind conflict, stale-data reset, resume, cancellation, and quoting of Windows startup paths with spaces.
+- 52 passing tests: exact wire offsets, SI units, gear conversion, protocol rejection, input validation, real localhost UDP relay/conversion, bind conflict, stale-data reset, resume, cancellation, quoting of Windows startup paths with spaces, executable preset/custom transitions and saved-name migration, and embedded icon loading at 16/32 pixels.
 - Process lifecycle smoke passed: custom Windows process name, duplicate guard, normal stop, session-directory cleanup, and child exit following forced parent termination.
 - Self-contained Windows x64 application published successfully.
 - GUI visually inspected on a 3840×2160 desktop; settings, guidance, controls, and log are visible.
 - Revised duplicate-status display visually confirmed with a bounded `MozaUiSmoke.exe` child: amber text showed the existing PID and Start was disabled before a click.
 - Tray/startup behavior is implemented and builds successfully. Live tray interaction and an actual Windows sign-in cycle have not been exercised; desktop automation was stopped at the user's request. Future desktop interaction requires asking first.
+- Follow-up dropdown/icon checks ran entirely in the background. Selector tests instantiate an unshown control with no form or tray icon; they verify FH5 default, Custom last, textbox visibility, preserved custom text, and old settings restoration. The new amber gauge ICO contains nine sizes from 16 to 256 pixels; application icon resources load at the actual tray/taskbar sizes. No mouse, keyboard, window-focus changes, or live desktop screenshots were used for this update.
 - [Initial GitHub Actions run](https://github.com/d-b-c-e/moza-telemetry-helper/actions/runs/34731723193) was blocked before any steps ran. GitHub's annotation reports failed recent account payments or a spending limit that needs increasing. This is an account-side runner block, not a test/build failure; billing settings were not changed. Local build/test/package results above remain valid.
 
 ## Pit House / hardware

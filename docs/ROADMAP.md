@@ -6,6 +6,8 @@
 - [x] WinForms UI with saved settings and bounded headless operation.
 - [x] Optional Windows sign-in startup, close to tray, tray Show/Start/Stop/Exit menu.
 - [x] Live process-availability indicator and disabled duplicate Start.
+- [x] Executable presets with FH5 default and Custom textbox, preserving existing saved names.
+- [x] Distinct amber gauge icon for executable, taskbar, and tray.
 - [x] FH5 relay and demo generator.
 - [x] Codemasters legacy 264-byte and PCARS2 physics-v2 codecs.
 - [x] Unit and local UDP integration tests; Windows packaging and CI.
