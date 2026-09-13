@@ -17,7 +17,7 @@ A Windows utility for running a small, idle process under a configurable executa
 - Optional start with Windows (app starts in tray) and close window to tray.
 - Tray menu: Show, Start helper/telemetry, Stop, and Exit; double-click to reopen.
 - Distinct amber gauge icon for the executable, taskbar, and system tray (adapted from Lucide, ISC license).
-- Per-user installer, Start menu entry, optional desktop shortcut, and uninstall support; no administrator rights required.
+- Per-user installer, Start menu entry, optional desktop shortcut and Start with Windows checkbox, and uninstall support; no administrator rights required.
 - Automatic GitHub update checks at launch and every six hours, plus Check now / Install update in the window and tray. Installation is available while the helper is stopped.
 - Race-off packet after two seconds without valid data and on normal stop.
 - Owned process exits when the helper stops or crashes. Existing games are never renamed or terminated.
@@ -26,7 +26,7 @@ A Windows utility for running a small, idle process under a configurable executa
 
 Windows 10 22H2 / Windows 11 x64. A published self-contained build needs no separate .NET installation.
 
-Download **MozaTelemetryHelper-0.2.0-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
+Download **MozaTelemetryHelper-0.2.1-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. Select **Start MOZA Telemetry Helper with Windows (in the system tray)** to open the app when you sign in. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
 
 The repository is currently private. Releases require a GitHub account with repository access until the owner makes it public. See [installation and updates](docs/installation-and-updates.md).
 

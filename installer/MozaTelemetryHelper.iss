@@ -8,6 +8,12 @@
   #error ReleaseDir must be supplied by scripts/release.ps1
 #endif
 
+#ifdef TestInstall
+  #define StartupKey "Software\MozaTelemetryHelper\PackagingTest\Run"
+#else
+  #define StartupKey "Software\Microsoft\Windows\CurrentVersion\Run"
+#endif
+
 [Setup]
 #ifdef TestInstall
 AppId={{C9084109-5268-4C2D-AE57-A4E36C79574B}
@@ -46,6 +52,7 @@ UninstallDisplayName=MOZA Telemetry Helper
 
 [Tasks]
 Name: desktopicon; Description: "Create a &desktop shortcut"; Flags: unchecked
+Name: startwithwindows; Description: "Start MOZA Telemetry Helper with &Windows (in the system tray)"; Flags: unchecked
 
 [Files]
 Source: "{#PublishDir}\*"; DestDir: "{app}"; Excludes: "*.pdb"; Flags: ignoreversion recursesubdirs createallsubdirs
@@ -59,9 +66,9 @@ Name: "{autodesktop}\MOZA Telemetry Helper"; Filename: "{app}\MozaTelemetryHelpe
 [Registry]
 #ifndef TestInstall
 Root: HKCU; Subkey: "Software\MozaTelemetryHelper\Installation"; ValueType: string; ValueName: "Path"; ValueData: "{app}"; Flags: uninsdeletekey
-; Preserve an enabled startup setting and repair its path after upgrades/moving from an archive.
-Root: HKCU; Subkey: "Software\Microsoft\Windows\CurrentVersion\Run"; ValueType: string; ValueName: "MozaTelemetryHelper"; ValueData: """{app}\MozaTelemetryHelper.exe"" --tray"; Check: StartupAlreadyEnabled
 #endif
+Root: HKCU; Subkey: "{#StartupKey}"; ValueType: string; ValueName: "MozaTelemetryHelper"; ValueData: """{app}\MozaTelemetryHelper.exe"" --tray"; Tasks: startwithwindows
+Root: HKCU; Subkey: "{#StartupKey}"; ValueType: none; ValueName: "MozaTelemetryHelper"; Flags: deletevalue; Tasks: not startwithwindows
 
 [Run]
 #ifndef TestInstall
@@ -72,17 +79,33 @@ Filename: "{app}\MozaTelemetryHelper.exe"; Description: "Open MOZA Telemetry Hel
 function StartupAlreadyEnabled: Boolean;
 var Command: String;
 begin
-  Result := RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'MozaTelemetryHelper', Command) and (Command <> '');
+  Result := RegQueryStringValue(HKCU, '{#StartupKey}', 'MozaTelemetryHelper', Command) and (Command <> '');
+end;
+
+procedure InitializeWizard;
+var I: Integer;
+begin
+  { Explicit task lists/settings files take precedence over the current app setting. }
+  for I := 1 to ParamCount do
+    if (Pos('/TASKS=', Uppercase(ParamStr(I))) = 1) or
+       (Pos('/LOADINF=', Uppercase(ParamStr(I))) = 1) then Exit;
+
+  { Read the live setting, since the user may have changed it in the app since Setup. }
+  if StartupAlreadyEnabled then WizardSelectTasks('startwithwindows')
+  else WizardSelectTasks('!startwithwindows');
+
+  { Preserve normal /MERGETASKS semantics without resetting unrelated tasks. }
+  for I := 1 to ParamCount do
+    if Pos('/MERGETASKS=', Uppercase(ParamStr(I))) = 1 then
+      WizardSelectTasks(Copy(ParamStr(I), 13, MaxInt));
 end;
 
 procedure CurUninstallStepChanged(CurUninstallStep: TUninstallStep);
 var Command: String;
 begin
-#ifndef TestInstall
   if CurUninstallStep = usUninstall then begin
-    if RegQueryStringValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'MozaTelemetryHelper', Command) then
+    if RegQueryStringValue(HKCU, '{#StartupKey}', 'MozaTelemetryHelper', Command) then
       if CompareText(Command, '"' + ExpandConstant('{app}\MozaTelemetryHelper.exe') + '" --tray') = 0 then
-        RegDeleteValue(HKCU, 'Software\Microsoft\Windows\CurrentVersion\Run', 'MozaTelemetryHelper');
+        RegDeleteValue(HKCU, '{#StartupKey}', 'MozaTelemetryHelper');
   end;
-#endif
 end;
