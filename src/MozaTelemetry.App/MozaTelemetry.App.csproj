@@ -9,6 +9,7 @@
   <ItemGroup><ProjectReference Include="../MozaTelemetry.Core/MozaTelemetry.Core.csproj" /></ItemGroup>
   <ItemGroup>
     <Compile Include="../Shared/UpdatePackage.cs" Link="UpdatePackage.cs" />
+    <Compile Include="../Shared/InstallerPreferences.cs" Link="InstallerPreferences.cs" />
     <EmbeddedResource Include="../../assets/app-icon.ico" LogicalName="MozaTelemetry.AppIcon.ico" />
     <Content Include="../../assets/LICENSE-lucide.txt" Link="LICENSE-lucide.txt" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>

@@ -4,10 +4,11 @@
 
 ## Automated
 
-- 73 passing tests: wire offsets, SI units, gears, protocol rejection, input validation, localhost UDP, stale-data handling, startup quoting, executable selection, icons, update version/asset filtering, settings migration, download limits/cancellation, and SHA-256 corruption/truncation rejection.
+- 78 passing tests: wire offsets, SI units, gears, protocol rejection, input validation, localhost UDP, stale-data handling, startup quoting, executable selection, icons, update version/asset filtering, settings migration, download limits/cancellation, SHA-256 rejection, and installer preference JSON preservation/error handling.
 - Process lifecycle smoke passed: custom Windows process name, duplicate guard, normal stop, session-directory cleanup, and child exit following forced parent termination.
 - Self-contained Windows x64 application published successfully.
 - v0.2 installer tested silently under a separate test AppId and temporary installation path, without shortcuts or production registry changes: complete payload, refusal to upgrade while the app mutex exists, successful upgrade, preservation of unrelated user data, installed-app lifecycle smoke checks, and uninstall cleanup all passed. The test never opens the app window.
+- v0.2.1 installer preference checks passed using a private test registry key and settings file: startup off / update checks on for new users, explicit enable and disable, preservation of preferences changed in the app after installation, startup path repair, retention of unrelated registry/JSON values, and uninstall removing only its startup entry while retaining app settings. These are silent tests; no live wizard interaction was used.
 - GitHub update selection and download verification have automated coverage; the final install-and-reopen interaction through the live UI still needs an authorized desktop test and a newer release.
 - v0.2.0 release assets were uploaded from commit `8dd214e`. GitHub-reported SHA-256 digests matched all three local artifacts. A background probe using the actual updater successfully checked the private repository through the existing GitHub CLI login, downloaded the 98,815,781-byte installer through its authenticated asset API, and passed size/SHA-256 verification. The probe's temporary download was removed. The standalone copied updater also starts successfully without other files beside it.
 - GUI visually inspected on a 3840×2160 desktop; settings, guidance, controls, and log are visible.

@@ -8,6 +8,16 @@ internal static class Program
 {
     private static async Task<int> Main(string[] args)
     {
+        if (args.Length == 2 && args[0] == "--read-update-preference")
+        {
+            try { return InstallerPreferences.ReadUpdateChecks(args[1]) ? 1 : 0; }
+            catch { return 2; }
+        }
+        if (args.Length == 3 && args[0] == "--write-update-preference")
+        {
+            try { InstallerPreferences.WriteUpdateChecks(args[1], bool.Parse(args[2])); return 0; }
+            catch { return 2; }
+        }
         if (args.Length != 7) return 2;
         string? restart = null;
         try

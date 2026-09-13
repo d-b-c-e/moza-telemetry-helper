@@ -17,7 +17,7 @@ A Windows utility for running a small, idle process under a configurable executa
 - Optional start with Windows (app starts in tray) and close window to tray.
 - Tray menu: Show, Start helper/telemetry, Stop, and Exit; double-click to reopen.
 - Distinct amber gauge icon for the executable, taskbar, and system tray (adapted from Lucide, ISC license).
-- Per-user installer, Start menu entry, optional desktop shortcut and Start with Windows checkbox, and uninstall support; no administrator rights required.
+- Per-user installer with desktop shortcut, Start with Windows, and automatic update-check options, plus uninstall support; no administrator rights required.
 - Automatic GitHub update checks at launch and every six hours, plus Check now / Install update in the window and tray. Installation is available while the helper is stopped.
 - Race-off packet after two seconds without valid data and on normal stop.
 - Owned process exits when the helper stops or crashes. Existing games are never renamed or terminated.
