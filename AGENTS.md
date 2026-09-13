@@ -23,4 +23,4 @@ Windows utility that runs an owned process with a configurable executable name t
 - Stop forwarding stale racing data. UI must distinguish running helper, packets sent, and hardware confirmation.
 - Keep machine-specific paths and telemetry captures out of source control. Record actual hardware results, including failures.
 - Ask before interacting with the user's desktop: mouse, keyboard, window focus, or live UI automation. Prefer background builds and tests. The user explicitly requested this on 2026-09-12.
-- Keep the GitHub repository private until the user changes visibility. Update downloads use public GitHub or an existing user's GitHub CLI login; never embed tokens. Install only after the owned session stops, validate size/SHA-256, and never force-close another instance.
+- The user authorized making the GitHub repository public on 2026-09-12. Public release checks/downloads need no GitHub login; never embed tokens. Install only after the owned session stops, validate size/SHA-256, and never force-close another instance.

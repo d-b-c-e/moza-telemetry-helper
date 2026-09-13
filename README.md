@@ -28,7 +28,7 @@ Windows 10 22H2 / Windows 11 x64. A published self-contained build needs no sepa
 
 Download **MozaTelemetryHelper-0.2.1-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. Select **Start MOZA Telemetry Helper with Windows (in the system tray)** to open the app when you sign in. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
 
-The repository is currently private. Releases require a GitHub account with repository access until the owner makes it public. See [installation and updates](docs/installation-and-updates.md).
+The repository and releases are public. Downloads and automatic update checks need no GitHub account or GitHub CLI. See [installation and updates](docs/installation-and-updates.md).
 
 1. Open the installed app from the Start menu, or build from source with the [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0):
 
@@ -84,7 +84,7 @@ dotnet test MozaTelemetry.slnx -c Release
 ./scripts/smoke-test.ps1
 ```
 
-Use the published folder when testing process identity; `dotnet run` alone does not stage the sentinel beside the app. Copy the **whole** `artifacts/win-x64` folder for distribution. The CI workflow builds, tests, and uploads that folder as a private Actions artifact.
+Use the published folder when testing process identity; `dotnet run` alone does not stage the sentinel beside the app. Copy the **whole** `artifacts/win-x64` folder for distribution. The CI workflow builds, tests, and uploads that folder as an Actions artifact.
 
 Bounded headless runs are available for diagnosis/automation:
 

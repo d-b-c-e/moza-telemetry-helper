@@ -24,11 +24,11 @@ For an installed copy, stop the helper and choose **Install update**. The app do
 
 Automatic checks do not automatically install or restart the app while a game is running. Downloads start only when the user chooses Install update. ZIP and development copies instead offer **Download Setup**, opening the release page; they are never overwritten by the installer updater.
 
-### Private repository now, public later
+### Public releases
 
-The updater tries the public GitHub API first. While the repository is private, it falls back to an installed **GitHub CLI** using that user's existing login (`gh auth login`) and repository access. MOZA Telemetry Helper does not retrieve, store, or ship a GitHub token. Signing into GitHub in a browser alone does not authenticate the CLI. A failed login/network check is shown in the log, with manual releases available through the browser.
+The repository is public. The updater checks GitHub and downloads releases without a GitHub account or GitHub CLI. Existing v0.2.0 and v0.2.1 builds already support this; no reinstall is required to enable anonymous updates.
 
-Once the repository becomes public, the same build can check and download updates without GitHub CLI or authentication. Changing visibility remains the owner's choice.
+An existing GitHub CLI login is used only as a fallback if the public API denies access or rate-limits requests. MOZA Telemetry Helper does not retrieve, store, or ship a GitHub token. Failed checks are shown in the log, with manual downloads available from the release page.
 
 ## Building a release
 
@@ -43,6 +43,6 @@ The script discovers ISCC in common per-user/system locations or accepts `-InnoC
 
 Update `Directory.Build.props`, commit, and tag the matching version, e.g. `v0.2.0`. `.github/workflows/release.yml` builds and uploads a **draft** GitHub release on version tags so all assets can be checked before publication. GitHub's asset digest must be present before publishing for the updater to accept the release. Do not put credentials into artifacts or source.
 
-Hosted GitHub Actions currently cannot start because of the account billing/spending-limit block documented in [verification](verification.md). Local packaging and `gh release create ... --verify-tag --notes-file ...` provide the release path until that is resolved.
+Initial private-repository GitHub Actions runs were blocked by the account billing/spending-limit condition documented in [verification](verification.md). The first releases were packaged locally; `gh release create ... --verify-tag --notes-file ...` remains an available release path.
 
 References: [Inno per-user installation](https://jrsoftware.org/ishelp/topic_setup_privilegesrequired.htm), [Inno application mutex](https://jrsoftware.org/ishelp/topic_setup_appmutex.htm), [Inno command-line options](https://jrsoftware.org/ishelp/topic_setupcmdline.htm), [GitHub release assets, authentication and digests](https://docs.github.com/en/rest/releases/assets).
