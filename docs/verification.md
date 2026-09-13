@@ -10,6 +10,7 @@
 - GUI visually inspected on a 3840×2160 desktop; settings, guidance, controls, and log are visible.
 - Revised duplicate-status display visually confirmed with a bounded `MozaUiSmoke.exe` child: amber text showed the existing PID and Start was disabled before a click.
 - Tray/startup behavior is implemented and builds successfully. Live tray interaction and an actual Windows sign-in cycle have not been exercised; desktop automation was stopped at the user's request. Future desktop interaction requires asking first.
+- [Initial GitHub Actions run](https://github.com/d-b-c-e/moza-telemetry-helper/actions/runs/34731723193) was blocked before any steps ran. GitHub's annotation reports failed recent account payments or a spending limit that needs increasing. This is an account-side runner block, not a test/build failure; billing settings were not changed. Local build/test/package results above remain valid.
 
 ## Pit House / hardware
 
