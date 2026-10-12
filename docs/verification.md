@@ -27,6 +27,13 @@
 ## Pit House / hardware
 
 - **2026-10-12 recheck on Pit House 1.4.1.13:** a 20-second headless Process-only run (`ForzaHorizon5.exe` sentinel PID 44800, no telemetry) made Pit House bind `127.0.0.1:20055` within 4 seconds and release it after the helper exited (exit 0). Before the run Pit House owned only unrelated UDP ports, not 20055, 20044 or 8001. The FH5 destination port is unchanged.
+- **The same run changed Pit House's saved Motor preset.** Pit House has `[IsAutoLoadPreset] Motor=true` in `Documents/MOZA Pit House/Presets/config.ini`. It rewrote that file at 14:53:30, during the run. The R12 last-used preset changed from the owner's custom *Arcade Xbox 270* (from a 2026-10-07 baseline snapshot) to the official *R12-Forza Horizon 5-Official2*, which is bound to FH5. Notable differences:
+  - steering angle 135 → 450;
+  - maximum torque 75 → 100;
+  - game FFB 40 → 55;
+  - damper / friction / spring 10 / 10 / 10 → 25 / 20 / 0.
+
+  Nothing was written back when the helper exited. This is persisted-file evidence: the wheel base's actual state was not read back. Copies and hashes are kept outside the repository.
 
 - Installed binary contains `ForzaHorizon5.exe`.
 - Before starting a sentinel, Pit House was running and did not own UDP port 20055.

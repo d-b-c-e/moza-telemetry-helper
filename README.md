@@ -4,6 +4,8 @@ A Windows utility for running a small, idle process under a configurable executa
 
 ![MOZA Telemetry Helper showing executable selection, telemetry settings, tray options, and update checks](docs/images/moza-telemetry-helper.png)
 
+> **⚠ Pit House may switch your wheel-base preset.** With Pit House's Motor *auto-load* preset option on, the fake `ForzaHorizon5.exe` makes Pit House load a preset bound to Forza Horizon 5. On the development rig it loaded *R12-Forza Horizon 5-Official2*, which uses a 450° steering angle and 100% maximum torque instead of the owner's everyday 135° / 75% preset. The change persisted after the helper stopped. Check the active preset in Pit House after using the helper, or turn auto-load off. See [verification](docs/verification.md).
+
 **The default helper works on the development setup:** Pit House 1.4.0.30 activates its FH5 reader, and the user confirmed the demo updates the on-wheel screen. A process name is not a documented MOZA API, and other versions/devices need testing. The converters remain experimental until tested with each game. See [verification](docs/verification.md).
 
 ## Features
@@ -109,6 +111,6 @@ Headless options: `--mode` (`ProcessOnly`, `Fh5Relay`, `Codemasters`, `ProjectCa
 - `scripts` — build/package and lifecycle checks.
 - `docs` — setup, references, verification, roadmap.
 
-Settings and temporary process copies live under `%LocalAppData%/MozaTelemetryHelper`. Normal stop removes the session copy; a crash may leave an inert session directory. The app does not modify Pit House, game executables, game configurations, wheel settings, or force-feedback parameters.
+Settings and temporary process copies live under `%LocalAppData%/MozaTelemetryHelper`. Normal stop removes the session copy; a crash may leave an inert session directory. The app does not edit Pit House files, game executables, game configurations, wheel settings, or force-feedback parameters. However, Pit House reacts to the process name: with Motor auto-load on, it can load a game-bound preset onto the wheel base (see the warning above).
 
 Unofficial project; not affiliated with MOZA Racing, Microsoft, or the game publishers.

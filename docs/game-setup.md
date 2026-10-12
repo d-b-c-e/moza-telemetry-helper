@@ -8,6 +8,8 @@
 4. Try Demo mode and observe RPM/speed/gear on the physical wheel display.
 5. Stop. Verify the named helper process is gone and the synthetic values stop.
 
+**Note the active Motor preset in Pit House before step 2, and check it again after step 5.** With Motor auto-load on, Pit House loads a preset bound to the detected game. On the development rig the FH5 identity loaded *R12-Forza Horizon 5-Official2* (450°, 100% torque), and that preset stayed selected after the helper stopped. Reselect your usual preset, or turn auto-load off, if you don't want that.
+
 Pit House can detect the actual game too, so native reader precedence may interfere when another supported title is running. Test each game separately. A renamed sentinel contains no game code or credentials and does not start the real game.
 
 ## Games/ports that already emit FH5
