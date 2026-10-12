@@ -1,3 +1,11 @@
 <Project Sdk="Microsoft.NET.Sdk">
-  <PropertyGroup><TargetFramework>net10.0</TargetFramework></PropertyGroup>
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <!-- Shared with Wheelkit as a pinned release asset (MozaTelemetry.Core.<version>.nupkg). -->
+    <PackageId>MozaTelemetry.Core</PackageId>
+    <Description>Owned process identity, Pit House preset preview, and FH5 telemetry codecs/relay from MOZA Telemetry Helper.</Description>
+    <Authors>d-b-c-e</Authors>
+    <RepositoryUrl>https://github.com/d-b-c-e/moza-telemetry-helper</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/d-b-c-e/moza-telemetry-helper</PackageProjectUrl>
+  </PropertyGroup>
 </Project>

@@ -11,6 +11,7 @@ internal static class Program
     {
         // Keep this handle alive until process exit; installers must also detect headless sessions.
         using var installationLock = new Mutex(false, UpdatePackage.AppMutex);
+        if (args.Length == 2 && args[0] == "--preset-check") return PresetCheck(args[1]);
         if (args.Contains("--headless")) return RunHeadlessAsync(args).GetAwaiter().GetResult();
         var startInTray = args.Contains("--tray");
         // A sign-in (--tray) launch stays quiet if the app is already open; any other launch shows the existing window.
@@ -19,6 +20,14 @@ internal static class Program
         ApplicationConfiguration.Initialize();
         Application.Run(new MainForm(instance, startInTray));
         return 0;
+    }
+
+    /// <summary>Read-only: writes Pit House's expected preset reaction to an identity as JSON on stdout. Starts nothing.</summary>
+    private static int PresetCheck(string identity)
+    {
+        var prediction = PitHousePresets.Predict(identity);
+        Console.Out.WriteLine(JsonSerializer.Serialize(new { Outlook = prediction.Outlook.ToString(), prediction.Current, prediction.Predicted, prediction.Reason, prediction.Summary }));
+        return prediction.Outlook == PresetOutlook.Unknown ? 1 : 0;
     }
 
     private static async Task<int> RunHeadlessAsync(string[] args)
@@ -51,15 +60,18 @@ internal static class Program
                     RpmScale = float.Parse(Value("--rpm-scale", "10"), CultureInfo.InvariantCulture)
                 }
             };
+            var prediction = settings.RunProcess ? PitHousePresets.Predict(settings.ProcessName) : null;
+            var before = settings.RunProcess ? PitHousePresets.Snapshot() : null;
             await using var session = new HelperSession();
             await session.StartAsync(settings);
             var childId = session.Identity.ProcessId;
-            if (report != null) File.WriteAllText(report, JsonSerializer.Serialize(new { State = "Running", ChildId = childId }));
+            if (report != null) File.WriteAllText(report, JsonSerializer.Serialize(new { State = "Running", ChildId = childId, PresetPrediction = prediction?.Summary }));
             await Task.Delay(TimeSpan.FromSeconds(seconds));
             var status = session.Bridge?.Status;
             var unexpectedExit = settings.RunProcess && !session.Identity.IsRunning;
             await session.DisposeAsync();
-            if (report != null) File.WriteAllText(report, JsonSerializer.Serialize(new { State = "Stopped", ChildId = childId, Status = status, UnexpectedExit = unexpectedExit }));
+            var presetChange = before is null ? null : PitHousePresets.DescribeChange(before, PitHousePresets.Snapshot());
+            if (report != null) File.WriteAllText(report, JsonSerializer.Serialize(new { State = "Stopped", ChildId = childId, Status = status, UnexpectedExit = unexpectedExit, PresetPrediction = prediction?.Summary, PresetChange = presetChange }));
             return status?.Error == null && !unexpectedExit ? 0 : 1;
         }
         catch (Exception exception)

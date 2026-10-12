@@ -4,7 +4,8 @@ namespace MozaTelemetry.App;
 
 public sealed class HelperSession : IAsyncDisposable
 {
-    public ProcessIdentity Identity { get; } = new();
+    public static string SessionsRoot => Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "MozaTelemetryHelper", "sessions");
+    public ProcessIdentity Identity { get; } = new(SessionsRoot);
     public TelemetryBridge? Bridge { get; private set; }
     public async Task StartAsync(AppSettings settings)
     {

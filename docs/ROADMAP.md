@@ -40,6 +40,13 @@
 - [x] No window flash on the `--tray` sign-in launch.
 - [ ] Confirm the tray icon appears after a real Windows sign-in.
 
+## v0.5 — preset safety and shared core
+
+- [x] Read-only Pit House preset preview before Start and change report after Stop; unknown on missing or ambiguous data.
+- [x] Process identity and preset preview moved to `MozaTelemetry.Core`; Core nupkg and native sentinel published as release assets for Wheelkit.
+- [x] Native AOT sentinel (1.5 MB, was 37 MB).
+- [ ] Attended test of a preset-switch mitigation (alternative identity, owner preset bound to the game, auto-load off, or SimHub's MOZA plugin).
+
 ## Compatibility matrix
 
 - [ ] Live DiRT 3 packet capture: version, size, RPM scale, reverse and neutral.

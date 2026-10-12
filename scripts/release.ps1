@@ -26,6 +26,10 @@ if ($LASTEXITCODE -ne 0) { throw 'Installer compilation failed.' }
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 $archive = Join-Path $dist "MozaTelemetryHelper-$version-win-x64.zip"
 [IO.Compression.ZipFile]::CreateFromDirectory($publish, $archive)
+# Shared with Wheelkit, which pins these two assets by version and SHA-256.
+dotnet pack (Join-Path $repoRoot 'src\MozaTelemetry.Core') -c Release -o $dist -p:ContinuousIntegrationBuild=true
+if ($LASTEXITCODE -ne 0) { throw 'Core package failed.' }
+Copy-Item -LiteralPath (Join-Path $publish 'sentinel\MozaTelemetry.Sentinel.exe') -Destination (Join-Path $dist "MozaTelemetry.Sentinel-$version-win-x64.exe")
 $assets = Get-ChildItem -LiteralPath $dist -File | Sort-Object Name
 $hashes = foreach ($asset in $assets) { (Get-FileHash -LiteralPath $asset.FullName -Algorithm SHA256).Hash.ToLowerInvariant() + '  ' + $asset.Name }
 [IO.File]::WriteAllLines((Join-Path $dist 'SHA256SUMS.txt'), [string[]]$hashes)

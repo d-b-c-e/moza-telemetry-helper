@@ -3,5 +3,10 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows</TargetFramework>
     <AssemblyName>MozaTelemetry.Sentinel</AssemblyName>
+    <!-- Native AOT: one small exe that needs no .NET runtime, so Wheelkit and the helper can both ship it. -->
+    <PublishAot>true</PublishAot>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <NativeDebugSymbols>false</NativeDebugSymbols>
+    <DebugType>none</DebugType>
   </PropertyGroup>
 </Project>

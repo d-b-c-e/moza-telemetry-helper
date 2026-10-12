@@ -18,6 +18,21 @@
 - Follow-up dropdown/icon checks ran entirely in the background. Selector tests instantiate an unshown control with no form or tray icon; they verify FH5 default, Custom last, textbox visibility, preserved custom text, and old settings restoration. The new amber gauge ICO contains nine sizes from 16 to 256 pixels; application icon resources load at the actual tray/taskbar sizes. No mouse, keyboard, window-focus changes, or live desktop screenshots were used for this update.
 - [Initial GitHub Actions run](https://github.com/d-b-c-e/moza-telemetry-helper/actions/runs/34731723193) was blocked before any steps ran. GitHub's annotation reports failed recent account payments or a spending limit that needs increasing. This is an account-side runner block, not a test/build failure; billing settings were not changed. Local build/test/package results above remain valid.
 
+## 0.5.0 (2026-10-12)
+
+- 113 passing tests, adding nine synthetic Pit House fixtures:
+  - switch, same, auto-load off;
+  - owner default-game preset precedence;
+  - a cross-game preset that must not create ambiguity;
+  - ambiguous, unreadable and missing data reported as unknown;
+  - change reporting;
+  - reading leaves every fixture file unchanged.
+- Process lifecycle smoke passed with the Native AOT sentinel (1,469,952 bytes): custom name, duplicate guard, normal stop, cleanup and exit after a forced parent kill.
+- Read-only `--preset-check` on the development rig, which starts no process:
+  - `ForzaHorizon5.exe`: predicted *Arcade Xbox 270 (135°, 75% torque) → R12-Forza Horizon 5-Official2 (450°, 100% torque)*, matching the switch observed earlier that day.
+  - `dirtrally2.exe`: predicted the owner's DiRT Rally 2.0 default.
+  - `ForzaHorizon4.exe`: reported unknown, because only a cross-game preset binds it.
+
 ## 0.4.0 (2026-10-12)
 
 - 104 passing tests, adding new-user close-to-tray defaults with saved choices kept, and single-instance behavior (a second launch is refused and asks the first to show; a quiet `--tray` second launch does not; the name frees after exit). Tests use unique object names, not the real app's.

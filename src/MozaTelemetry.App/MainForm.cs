@@ -18,6 +18,9 @@ public sealed partial class MainForm : Form
     private readonly Button stop = new() { Text = "Stop", AutoSize = true, Enabled = false, Padding = new Padding(18, 7, 18, 7) };
     private readonly Label guidance = new() { AutoSize = true, MaximumSize = new Size(780, 0) };
     private readonly Label processAvailability = new() { AutoSize = true, MaximumSize = new Size(590, 0), Padding = new Padding(0, 2, 0, 4) };
+    private readonly Label presetStatus = new() { AutoSize = true, MaximumSize = new Size(590, 0), Padding = new Padding(0, 2, 0, 4) };
+    private PresetSnapshot? presetBefore;
+    private int presetRefresh;
     private readonly Label state = new() { AutoSize = true, Text = "Stopped", Font = new Font("Segoe UI", 16, FontStyle.Bold) };
     private readonly Label stats = new() { AutoSize = true, Text = "Received 0    Sent 0    Ignored / invalid 0" };
     private readonly Label dashboard = new() { AutoSize = true, Text = "— RPM     — km/h     Gear —", Font = new Font("Segoe UI", 18, FontStyle.Bold) };
@@ -68,6 +71,7 @@ public sealed partial class MainForm : Form
         AddRow(grid, "Executable name", processName);
         AddRow(grid, "", runProcess);
         AddRow(grid, "Process status", processAvailability);
+        if (PitHousePresets.IsPresent()) AddRow(grid, "Pit House preset", presetStatus);
         AddRow(grid, "Telemetry mode", mode);
         var input = new FlowLayoutPanel { AutoSize = true, Dock = DockStyle.Fill };
         listenAddress.Width = 160; listenPort.Width = 100;
@@ -106,8 +110,8 @@ public sealed partial class MainForm : Form
             else { listenPort.Value = 20777; listenAddress.SelectedIndex = 0; }
             UpdateGuidance();
         };
-        runProcess.CheckedChanged += (_, _) => { UpdateGuidance(); UpdateAvailability(); };
-        processName.ExecutableNameChanged += (_, _) => UpdateAvailability();
+        runProcess.CheckedChanged += (_, _) => { UpdateGuidance(); UpdateAvailability(); RefreshPresetStatus(); };
+        processName.ExecutableNameChanged += (_, _) => { UpdateAvailability(); RefreshPresetStatus(); };
         availabilityTimer.Tick += (_, _) => UpdateAvailability();
         timer.Tick += async (_, _) => await RefreshStatusAsync();
         trayMenu.Items.Add("Show MOZA Telemetry Helper", null, (_, _) => ShowFromTray());
@@ -146,6 +150,7 @@ public sealed partial class MainForm : Form
         closeToTray.CheckedChanged += (_, _) => SavePreferences(updateStartup: false);
         UpdateGuidance();
         UpdateAvailability();
+        RefreshPresetStatus();
         availabilityTimer.Start();
         Append("Ready. Process status shows whether the selected name is available. Start runs your own helper session; Stop ends only that session.");
         Shown += (_, _) => { if (startInTray) { HideToTray(showNotification: false); Opacity = 1; } };
@@ -259,6 +264,24 @@ public sealed partial class MainForm : Form
         UpdateTrayMenu();
     }
 
+    private async void RefreshPresetStatus()
+    {
+        if (!PitHousePresets.IsPresent()) return;
+        var version = ++presetRefresh;
+        if (!runProcess.Checked) { presetStatus.ForeColor = ForeColor; presetStatus.Text = "No identity process: Pit House presets are unaffected by this app."; return; }
+        string name;
+        try { name = ProcessIdentity.NormalizeName(processName.ExecutableName); }
+        catch (ArgumentException) { presetStatus.Text = ""; return; }
+        try
+        {
+            var prediction = await Task.Run(() => PitHousePresets.Predict(name));
+            if (version != presetRefresh || IsDisposed) return;
+            presetStatus.ForeColor = prediction.Outlook is PresetOutlook.Switches or PresetOutlook.Unknown ? Color.FromArgb(255, 194, 91) : ForeColor;
+            presetStatus.Text = prediction.Summary;
+        }
+        catch (Exception exception) when (exception is ObjectDisposedException or InvalidOperationException) { /* Closing. */ }
+    }
+
     private void UpdateTrayMenu()
     {
         trayStart.Enabled = start.Enabled;
@@ -318,6 +341,16 @@ public sealed partial class MainForm : Form
         try
         {
             var settings = ReadSettings();
+            if (settings.RunProcess && PitHousePresets.IsPresent())
+            {
+                // Pit House reacts to the identity: say what it is expected to do to the wheel base, and remember the
+                // saved selection so Stop can report a change it does not undo.
+                var prediction = await Task.Run(() => PitHousePresets.Predict(settings.ProcessName));
+                presetBefore = await Task.Run(() => PitHousePresets.Snapshot());
+                Append("Pit House: " + prediction.Summary);
+                if (!Visible && prediction.Outlook is PresetOutlook.Switches)
+                    trayIcon.ShowBalloonTip(6000, "Pit House may switch your wheel preset", prediction.Summary, ToolTipIcon.Warning);
+            }
             session = new HelperSession();
             state.Text = "Starting…";
             await session.StartAsync(settings);
@@ -351,6 +384,17 @@ public sealed partial class MainForm : Form
             await active.DisposeAsync();
             if (ownedProcess != null) Append($"Stopped this session's process helper (PID {ownedProcess})" + (telemetryWasStarted ? " and telemetry." : "."));
             else if (telemetryWasStarted) Append("Stopped this session's telemetry bridge.");
+        }
+        if (presetBefore is { } before)
+        {
+            presetBefore = null;
+            var change = await Task.Run(() => PitHousePresets.DescribeChange(before, PitHousePresets.Snapshot()));
+            if (change != null)
+            {
+                Append(change);
+                if (!Visible) trayIcon.ShowBalloonTip(8000, "Check your wheel-base preset", change, ToolTipIcon.Warning);
+            }
+            RefreshPresetStatus();
         }
         state.Text = "Stopped"; dashboard.Text = "— RPM     — km/h     Gear —";
         start.Enabled = true;

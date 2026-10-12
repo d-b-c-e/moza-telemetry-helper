@@ -1,3 +1,4 @@
+using MozaTelemetry.Core;
 using System.ComponentModel;
 
 namespace MozaTelemetry.App;

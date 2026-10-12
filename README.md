@@ -4,12 +4,13 @@ A Windows utility for running a small, idle process under a configurable executa
 
 ![MOZA Telemetry Helper showing executable selection, telemetry settings, tray options, and update checks](docs/images/moza-telemetry-helper.png)
 
-> **⚠ Pit House may switch your wheel-base preset.** With Pit House's Motor *auto-load* preset option on, the fake `ForzaHorizon5.exe` makes Pit House load a preset bound to Forza Horizon 5. On the development rig it loaded *R12-Forza Horizon 5-Official2*, which uses a 450° steering angle and 100% maximum torque instead of the owner's everyday 135° / 75% preset. The change persisted after the helper stopped. Check the active preset in Pit House after using the helper, or turn auto-load off. See [verification](docs/verification.md).
+> **⚠ Pit House may switch your wheel-base preset.** With Pit House's Motor *auto-load* preset option on, the fake `ForzaHorizon5.exe` makes Pit House load a preset bound to Forza Horizon 5. On the development rig it loaded *R12-Forza Horizon 5-Official2*, which uses a 450° steering angle and 100% maximum torque instead of the owner's everyday 135° / 75% preset. The change persisted after the helper stopped. Check the active preset in Pit House after using the helper, or turn auto-load off. Since 0.5.0 the app previews this before Start and reports a changed preset after Stop (read-only). See [verification](docs/verification.md).
 
 **The default helper works on the development setup:** Pit House 1.4.0.30 activates its FH5 reader, and the user confirmed the demo updates the on-wheel screen. A process name is not a documented MOZA API, and other versions/devices need testing. The converters remain experimental until tested with each game. See [verification](docs/verification.md).
 
 ## Features
 
+- **Pit House preset preview** (shown when Pit House is installed): reads your saved Pit House presets to predict whether the chosen name will make Pit House switch your wheel-base preset, and reports a changed selection after Stop. Missing or ambiguous data is reported as unknown. Read-only.
 - Executable-name presets and Start/Stop controls; FH5 is the default. Choose **Custom** (last in the list) to reveal a name textbox. A live availability indicator shows existing process IDs and disables duplicate starts.
 - Process only mode for games/ports already emitting FH5 directly to Pit House.
 - FH5 relay with byte-for-byte forwarding of validated 324-byte packets.
@@ -31,7 +32,7 @@ A Windows utility for running a small, idle process under a configurable executa
 
 Windows 10 22H2 / Windows 11 x64. A published self-contained build needs no separate .NET installation.
 
-Download **MozaTelemetryHelper-0.4.0-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. **Start MOZA Telemetry Helper with Windows (in the system tray)** is checked on a fresh install; upgrades keep your current choice. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
+Download **MozaTelemetryHelper-0.5.0-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. **Start MOZA Telemetry Helper with Windows (in the system tray)** is checked on a fresh install; upgrades keep your current choice. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
 
 The repository and releases are public. Downloads and automatic update checks need no GitHub account or GitHub CLI. See [installation and updates](docs/installation-and-updates.md).
 
@@ -105,8 +106,8 @@ Headless options: `--mode` (`ProcessOnly`, `Fh5Relay`, `Codemasters`, `ProjectCa
 ## Project structure
 
 - `src/MozaTelemetry.App` — WinForms UI, settings, lifecycle, headless entry point.
-- `src/MozaTelemetry.Sentinel` — idle child, parent-death monitoring, explicit stop/ready events.
-- `src/MozaTelemetry.Core` — normalized samples, codecs, cancellable UDP relay.
+- `src/MozaTelemetry.Sentinel` — idle child, parent-death monitoring, explicit stop/ready events. Native AOT (about 1.5 MB, no .NET runtime); building it needs the Visual Studio C++ build tools.
+- `src/MozaTelemetry.Core` — owned process identity, read-only Pit House preset preview, normalized samples, codecs, cancellable UDP relay. Released as `MozaTelemetry.Core.<version>.nupkg` with `MozaTelemetry.Sentinel-<version>-win-x64.exe` for Wheelkit, which pins both by SHA-256.
 - `tests/MozaTelemetry.Tests` — wire-format and UDP tests.
 - `scripts` — build/package and lifecycle checks.
 - `docs` — setup, references, verification, roadmap.
