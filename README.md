@@ -16,7 +16,7 @@ A Windows utility for running a small, idle process under a configurable executa
 - Demo signal with moving RPM, speed, and gear for testing without a game.
 - Configurable IPv4 endpoints and Codemasters RPM multiplier.
 - Live dashboard, packet/error counters, settings saved per Windows user.
-- Optional start with Windows (app starts in tray) and close window to tray.
+- Starts with Windows in the system tray and closes to the tray by default, so it is always one right-click away. Both can be turned off. Only one copy runs: opening it again shows the existing window.
 - Optional global hotkey to toggle the helper session from a game or the tray. Suggested shortcut: **Ctrl+Alt+F10**; choose another combination in **Toggle hotkey**. Disabled until you enable it. [Hotkey setup](docs/hotkeys.md).
 - Tray menu: Show, Start helper/telemetry, Stop, and Exit; double-click to reopen.
 - Distinct amber gauge icon for the executable, taskbar, and system tray (adapted from Lucide, ISC license).
@@ -29,7 +29,7 @@ A Windows utility for running a small, idle process under a configurable executa
 
 Windows 10 22H2 / Windows 11 x64. A published self-contained build needs no separate .NET installation.
 
-Download **MozaTelemetryHelper-0.3.0-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. Select **Start MOZA Telemetry Helper with Windows (in the system tray)** to open the app when you sign in. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
+Download **MozaTelemetryHelper-0.4.0-Setup.exe** from [Releases](https://github.com/d-b-c-e/moza-telemetry-helper/releases/latest) and run it. Setup installs to `%LocalAppData%\Programs\MozaTelemetryHelper` by default and does not ask for elevation. **Start MOZA Telemetry Helper with Windows (in the system tray)** is checked on a fresh install; upgrades keep your current choice. A ZIP is also available: extract the entire archive before running the executable. Settings live in `%LocalAppData%\MozaTelemetryHelper` for both distributions.
 
 The repository and releases are public. Downloads and automatic update checks need no GitHub account or GitHub CLI. See [installation and updates](docs/installation-and-updates.md).
 
@@ -43,13 +43,15 @@ The repository and releases are public. Downloads and automatic update checks ne
 2. Start MOZA Pit House and leave **ForzaHorizon5.exe** selected in the helper.
 3. Select **Process only** if your game already sends FH5 telemetry to Pit House. MOZA's documented FH5 destination is `127.0.0.1:20055`; use your configured Pit House port if changed.
 4. Click **Start helper** and launch your game. Check Pit House detection and the physical display.
-5. Click **Stop** when finished. Closing the window exits by default; with **Close window to tray** enabled, it keeps running. Use the tray menu's **Exit** to stop everything.
+5. Click **Stop** when finished. Closing the window keeps the app in the tray (turn off **Close window to tray** to exit instead). Use the tray menu's **Exit** to stop everything.
 
 To test without a game, choose **Demo → FH5**. To use a telemetry source with a different output format, see [game setup](docs/game-setup.md).
 
-Under **App behavior**, enable **Start app with Windows** to register this app for your current Windows account (no admin needed). It opens in the system tray at sign-in, ready for **right-click → Start helper**. This option starts the app, not a fake game or demo signal automatically. Keep the published folder in a stable location; if you move it, toggle this option off and back on to update the startup path. Both behavior options are off by default and apply when changed.
+Under **App behavior**, **Start app with Windows** registers this app for your current Windows account (no admin needed). It opens in the system tray at sign-in, ready for **right-click → Start helper**. This option starts the app, not a fake game or demo signal automatically. Setup enables it on a fresh install; ZIP copies start with it off. Keep a ZIP copy in a stable location; if you move it, toggle this option off and back on to update the startup path. Both behavior options apply when changed.
 
-The tray icon is available while the app is open. Right-click for Show, Start, Stop, and Exit; double-click to show the window. With **Close window to tray** enabled, the X button hides the window and preserves a running session. Tray **Exit** still cleans up. **Stop** only stops a process created by that particular app instance.
+The tray icon is available while the app is open. Right-click for Show, Start, Stop, and Exit; double-click to show the window. With **Close window to tray** enabled (the default for new users), the X button hides the window and preserves a running session. Tray **Exit** still cleans up. **Stop** only stops a process created by that particular app instance.
+
+Only one copy of the app runs per Windows session. Opening it from the Start menu or desktop while it is in the tray shows the existing window; the sign-in launch exits quietly if the app is already open.
 
 If FH5 or another matching process is already running (including a headless helper), an amber process-status message shows its PID and Start is disabled. The status refreshes automatically. Stop the existing session, or uncheck **Run process helper** and choose a telemetry mode to use the bridge alone. A custom process name only changes detection identity; output remains FH5 and must be sent to an FH5 reader.
 

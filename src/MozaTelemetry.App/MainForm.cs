@@ -7,7 +7,7 @@ public sealed partial class MainForm : Form
     private readonly ProcessNameSelector processName = new();
     private readonly CheckBox runProcess = new() { Text = "Run process helper", Checked = true, AutoSize = true };
     private readonly CheckBox startWithWindows = new() { Text = "Start app with Windows (in tray)", AutoSize = true };
-    private readonly CheckBox closeToTray = new() { Text = "Close window to tray (keeps helper running)", AutoSize = true };
+    private readonly CheckBox closeToTray = new() { Text = "Close window to tray (keeps helper running)", AutoSize = true, Checked = true };
     private readonly ComboBox mode = new() { DropDownStyle = ComboBoxStyle.DropDownList, DropDownWidth = 780 };
     private readonly ComboBox listenAddress = new() { DropDownStyle = ComboBoxStyle.DropDownList };
     private readonly NumericUpDown listenPort = Port(20777);
@@ -38,9 +38,11 @@ public sealed partial class MainForm : Form
     private bool loadingPreferences;
     private bool explainedTray;
 
-    public MainForm(bool startInTray = false)
+    public MainForm(SingleInstance instance, bool startInTray = false)
     {
         Text = "MOZA Telemetry Helper " + GitHubUpdates.CurrentVersion;
+        // Sign-in launches stay invisible until the first Shown hides the window, avoiding a flash at startup.
+        if (startInTray) { Opacity = 0; ShowInTaskbar = false; }
         Icon = appImage;
         trayIcon.Icon = trayImage;
         ClientSize = new Size(900, 930);
@@ -146,7 +148,12 @@ public sealed partial class MainForm : Form
         UpdateAvailability();
         availabilityTimer.Start();
         Append("Ready. Process status shows whether the selected name is available. Start runs your own helper session; Stop ends only that session.");
-        Shown += (_, _) => { if (startInTray) HideToTray(showNotification: false); };
+        Shown += (_, _) => { if (startInTray) { HideToTray(showNotification: false); Opacity = 1; } };
+        instance.OnShowRequested(() =>
+        {
+            try { if (IsHandleCreated && !exitRequested) BeginInvoke(ShowFromTray); }
+            catch (Exception exception) when (exception is InvalidOperationException or ObjectDisposedException) { /* Closing. */ }
+        });
     }
 
     private static NumericUpDown Port(int value) => new() { Minimum = 1, Maximum = 65535, Value = value };

@@ -18,7 +18,15 @@
 - Follow-up dropdown/icon checks ran entirely in the background. Selector tests instantiate an unshown control with no form or tray icon; they verify FH5 default, Custom last, textbox visibility, preserved custom text, and old settings restoration. The new amber gauge ICO contains nine sizes from 16 to 256 pixels; application icon resources load at the actual tray/taskbar sizes. No mouse, keyboard, window-focus changes, or live desktop screenshots were used for this update.
 - [Initial GitHub Actions run](https://github.com/d-b-c-e/moza-telemetry-helper/actions/runs/34731723193) was blocked before any steps ran. GitHub's annotation reports failed recent account payments or a spending limit that needs increasing. This is an account-side runner block, not a test/build failure; billing settings were not changed. Local build/test/package results above remain valid.
 
+## 0.4.0 (2026-10-12)
+
+- 104 passing tests, adding new-user close-to-tray defaults with saved choices kept, and single-instance behavior (a second launch is refused and asks the first to show; a quiet `--tray` second launch does not; the name frees after exit). Tests use unique object names, not the real app's.
+- Release packaging passed the hidden process lifecycle smoke. The isolated installer test now asserts that a fresh install enables startup (`"<app>\MozaTelemetryHelper.exe" --tray`), that an upgrade after the user removed startup keeps it off, that explicit enable/disable and live-preference preservation still work, and that uninstall removes the entry.
+- Not yet exercised: a real Windows sign-in cycle, and the window-shown path of a second launch on the desktop.
+
 ## Pit House / hardware
+
+- **2026-10-12 recheck on Pit House 1.4.1.13:** a 20-second headless Process-only run (`ForzaHorizon5.exe` sentinel PID 44800, no telemetry) made Pit House bind `127.0.0.1:20055` within 4 seconds and release it after the helper exited (exit 0). Before the run Pit House owned only unrelated UDP ports, not 20055, 20044 or 8001. The FH5 destination port is unchanged.
 
 - Installed binary contains `ForzaHorizon5.exe`.
 - Before starting a sentinel, Pit House was running and did not own UDP port 20055.

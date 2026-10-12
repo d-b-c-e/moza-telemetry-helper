@@ -32,6 +32,14 @@
 - [x] Automated registration and toggle-dispatch tests without desktop input.
 - [ ] User verification of the shortcut while playing a game.
 
+## v0.4 — always available in the tray
+
+- [x] Setup checks Start with Windows on fresh installs; upgrades keep the user's live choice.
+- [x] Close window to tray on by default for new users; saved choices kept.
+- [x] Single GUI instance per Windows session; a later launch shows the existing window, a later `--tray` launch exits quietly.
+- [x] No window flash on the `--tray` sign-in launch.
+- [ ] Confirm the tray icon appears after a real Windows sign-in.
+
 ## Compatibility matrix
 
 - [ ] Live DiRT 3 packet capture: version, size, RPM scale, reverse and neutral.

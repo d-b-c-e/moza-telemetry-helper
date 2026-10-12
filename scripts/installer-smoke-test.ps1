@@ -46,9 +46,13 @@ try {
     $settings | Add-Member -NotePropertyName UnrelatedSetting -NotePropertyValue 'preserve me'
     [IO.File]::WriteAllText($settingsFile, ($settings | ConvertTo-Json))
     $testRun = [Microsoft.Win32.Registry]::CurrentUser.CreateSubKey($testRunSubkey)
-    if ($null -ne $testRun.GetValue('MozaTelemetryHelper')) { throw 'A fresh installation unexpectedly enabled startup.' }
-    $testRun.SetValue('UnrelatedTestEntry', 'preserve me')
     $expectedStartup = '"' + (Join-Path $installDir 'MozaTelemetryHelper.exe') + '" --tray'
+    if ($testRun.GetValue('MozaTelemetryHelper') -ne $expectedStartup) { throw 'A fresh installation did not enable startup in the tray by default.' }
+    $testRun.SetValue('UnrelatedTestEntry', 'preserve me')
+    # Simulate disabling in the app, then enable again through Setup.
+    $testRun.DeleteValue('MozaTelemetryHelper')
+    if ((Run-Silent $installer ($common + @("/DIR=$installDir", "/LOG=$testRoot\upgrade-off.log"))) -ne 0) { throw 'Upgrade after disabling startup failed.' }
+    if ($null -ne $testRun.GetValue('MozaTelemetryHelper')) { throw 'Upgrade re-enabled startup that the user had disabled.' }
     if ((Run-Silent $installer ($common + @("/DIR=$installDir", '/MERGETASKS=startwithwindows', "/LOG=$testRoot\startup-on.log"))) -ne 0) { throw 'Enabling startup failed.' }
     if ($testRun.GetValue('MozaTelemetryHelper') -ne $expectedStartup) { throw 'The startup task did not write the quoted executable path and --tray.' }
     # Simulate disabling in the app after Setup remembered a checked task.
@@ -70,7 +74,7 @@ try {
     Assert-UpdatePreference $false
     if ((Get-Content -LiteralPath $settingsFile -Raw | ConvertFrom-Json).UnrelatedSetting -ne 'preserve me') { throw 'Setup changed unrelated app settings.' }
     if ($testRun.GetValue('UnrelatedTestEntry') -ne 'preserve me') { throw 'Startup changes modified another registry value.' }
-    Write-Host 'PASS: startup defaults off, enable/disable works, and upgrades preserve the live app preference'
+    Write-Host 'PASS: startup defaults on for fresh installs, enable/disable works, and upgrades preserve the live app preference'
     Write-Host 'PASS: update checks default on, can be disabled, and preserve live changes and unrelated settings on upgrade'
     $runnerCopy = Join-Path $testRoot 'MozaTelemetryUpdater.exe'
     Copy-Item -LiteralPath (Join-Path $installDir 'updater\MozaTelemetryUpdater.exe') -Destination $runnerCopy

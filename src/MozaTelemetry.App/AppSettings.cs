@@ -8,7 +8,7 @@ public sealed record AppSettings
     public string ProcessName { get; init; } = ProcessNameSelector.DefaultExecutable;
     public bool RunProcess { get; init; } = true;
     public bool StartWithWindows { get; init; }
-    public bool CloseToTray { get; init; }
+    public bool CloseToTray { get; init; } = true;
     public bool CheckForUpdates { get; init; } = true;
     public HotkeyOptions Hotkey { get; init; } = new();
     public BridgeOptions Bridge { get; init; } = new();

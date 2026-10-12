@@ -12,8 +12,12 @@ internal static class Program
         // Keep this handle alive until process exit; installers must also detect headless sessions.
         using var installationLock = new Mutex(false, UpdatePackage.AppMutex);
         if (args.Contains("--headless")) return RunHeadlessAsync(args).GetAwaiter().GetResult();
+        var startInTray = args.Contains("--tray");
+        // A sign-in (--tray) launch stays quiet if the app is already open; any other launch shows the existing window.
+        using var instance = SingleInstance.TryAcquire(SingleInstance.WindowName, showExisting: !startInTray);
+        if (instance == null) return 0;
         ApplicationConfiguration.Initialize();
-        Application.Run(new MainForm(startInTray: args.Contains("--tray")));
+        Application.Run(new MainForm(instance, startInTray));
         return 0;
     }
 

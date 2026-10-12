@@ -11,9 +11,11 @@
 #ifdef TestInstall
   #define StartupKey "Software\MozaTelemetryHelper\PackagingTest\Run"
   #define SettingsFile "{app}\packaging-test-settings.json"
+  #define UninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\{C9084109-5268-4C2D-AE57-A4E36C79574B}_is1"
 #else
   #define StartupKey "Software\Microsoft\Windows\CurrentVersion\Run"
   #define SettingsFile "{localappdata}\MozaTelemetryHelper\settings.json"
+  #define UninstallKey "Software\Microsoft\Windows\CurrentVersion\Uninstall\{C515D9B6-F334-4DB0-90F4-31915471CA8E}_is1"
 #endif
 
 [Setup]
@@ -54,7 +56,7 @@ UninstallDisplayName=MOZA Telemetry Helper
 
 [Tasks]
 Name: desktopicon; Description: "Create a &desktop shortcut"; Flags: unchecked
-Name: startwithwindows; Description: "Start MOZA Telemetry Helper with &Windows (in the system tray)"; Flags: unchecked
+Name: startwithwindows; Description: "Start MOZA Telemetry Helper with &Windows (in the system tray)"
 Name: checkforupdates; Description: "Automatically &check GitHub for updates"
 
 [Files]
@@ -102,6 +104,11 @@ begin
   Result := RegQueryStringValue(HKCU, '{#StartupKey}', 'MozaTelemetryHelper', Command) and (Command <> '');
 end;
 
+function PreviouslyInstalled: Boolean;
+begin
+  Result := RegKeyExists(HKCU, '{#UninstallKey}');
+end;
+
 procedure InitializePreferenceTasks;
 var I: Integer;
 begin
@@ -112,9 +119,10 @@ begin
     if (Pos('/TASKS=', Uppercase(ParamStr(I))) = 1) or
        (Pos('/LOADINF=', Uppercase(ParamStr(I))) = 1) then Exit;
 
-  { Read the live setting, since the user may have changed it in the app since Setup. }
+  { Fresh installs keep startup checked. Upgrades read the live setting, since the user may
+    have changed it in the app since Setup. An already-enabled entry is kept and repointed. }
   if StartupAlreadyEnabled then WizardSelectTasks('startwithwindows')
-  else WizardSelectTasks('!startwithwindows');
+  else if PreviouslyInstalled then WizardSelectTasks('!startwithwindows');
   if ReadUpdateChecks then WizardSelectTasks('checkforupdates')
   else WizardSelectTasks('!checkforupdates');
 
