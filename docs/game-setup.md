@@ -12,6 +12,19 @@
 
 Pit House can detect the actual game too, so native reader precedence may interfere when another supported title is running. Test each game separately. A renamed sentinel contains no game code or credentials and does not start the real game.
 
+## Using SimHub at the same time
+
+If your game or mod already sends Forza telemetry to SimHub (usually port 8000), SimHub can pass a copy to Pit House:
+
+1. Run the helper in **Process only** mode.
+2. SimHub then detects Forza Horizon 5.
+3. In SimHub's **Forza Horizon 5** game settings, enable UDP forwarding to `127.0.0.1` port `20055`.
+4. Press **OK**. The forward does not apply until you do, and SimHub may only save it to disk later.
+
+Set the forward on the FH5 profile specifically. A forward set on another Forza profile is not used while SimHub has FH5 selected.
+
+Confirmed working on the development rig on 2026-10-12.
+
 ## Games/ports that already emit FH5
 
 The lowest-friction setup uses Process only mode and the game's existing FH5 destination. MOZA documents `127.0.0.1:20055`. If diagnostics or routing are needed, change the game's destination to `127.0.0.1:20777`, select FH5 relay, and keep the helper output at `127.0.0.1:20055`.
